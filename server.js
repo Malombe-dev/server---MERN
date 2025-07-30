@@ -64,6 +64,7 @@ app.use(cors({
     'https://malombe-4jn0e8kmj-malombes-projects.vercel.app',
     'https://server-mern-zc6l.onrender.com',
     'https://malombe-mupsvlud3-malombes-projects.vercel.app'
+    
      ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
