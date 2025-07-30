@@ -61,7 +61,8 @@ app.use(cors({
     'http://localhost:3000', 
     'http://localhost:5173', 
     'http://localhost:5000',
-    'https://malombe-4jn0e8kmj-malombes-projects.vercel.app'
+    'https://malombe-4jn0e8kmj-malombes-projects.vercel.app',
+    'https://server-mern-zc6l.onrender.com'
      ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
