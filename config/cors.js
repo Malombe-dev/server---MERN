@@ -5,9 +5,7 @@ module.exports = cors({
   origin: [
     'http://localhost:3000', 
     'http://localhost:5173',
-    'https://malombe-4jn0e8kmj-malombes-projects.vercel.app',
-    'https://malombe-mupsvlud3-malombes-projects.vercel.app'
-
+    'https://malombe-iq37fl8pc-malombes-projects.vercel.app'
   ],
   credentials: true
 });
