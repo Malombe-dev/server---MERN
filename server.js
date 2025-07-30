@@ -63,7 +63,9 @@ app.use(cors({
     'http://localhost:5000',
     'https://malombe-4jn0e8kmj-malombes-projects.vercel.app',
     'https://server-mern-zc6l.onrender.com',
-    'https://malombe-iq37fl8pc-malombes-projects.vercel.app'
+    'https://malombe-iq37fl8pc-malombes-projects.vercel.app',
+    'https://malombe.vercel.app'
+     
     
      ],
   credentials: true,
