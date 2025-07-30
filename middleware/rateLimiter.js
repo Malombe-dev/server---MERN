@@ -126,13 +126,9 @@ const uploadLimiter = rateLimit({
 // Speed limiter to slow down requests after certain threshold
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  delayAfter: 50, // Allow 50 requests per windowMs without delay
-  delayMs: 500, // Add 500ms delay per request after delayAfter
-  maxDelayMs: 20000, // Maximum delay of 20 seconds
-  headers: true, // Send custom rate limit header with delay info
-  onLimitReached: (req, res, options) => {
-    console.log(`Speed limit reached for IP: ${req.ip}`);
-  }
+  delayAfter: 50,
+  delayMs: () => 500, // Updated to new behavior
+  maxDelayMs: 20000
 });
 
 // Dynamic rate limiter based on user behavior

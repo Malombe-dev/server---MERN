@@ -48,6 +48,7 @@ const sendErrorDev = (err, req, res) => {
   // API Error
   if (req.originalUrl.startsWith('/api')) {
     return res.status(err.statusCode).json({
+      success: false,
       status: err.status,
       error: err,
       message: err.message,
@@ -57,9 +58,9 @@ const sendErrorDev = (err, req, res) => {
 
   // Rendered website error
   console.error('ERROR 💥', err);
-  return res.status(err.statusCode).render('error', {
-    title: 'Something went wrong!',
-    msg: err.message
+  return res.status(err.statusCode).json({
+    success: false,
+    message: err.message
   });
 };
 
@@ -70,6 +71,7 @@ const sendErrorProd = (err, req, res) => {
     // Operational, trusted error: send message to client
     if (err.isOperational) {
       return res.status(err.statusCode).json({
+        success: false,
         status: err.status,
         message: err.message
       });
@@ -78,24 +80,25 @@ const sendErrorProd = (err, req, res) => {
     // Programming or other unknown error: don't leak error details
     console.error('ERROR 💥', err);
     return res.status(500).json({
+      success: false,
       status: 'error',
       message: 'Something went wrong!'
     });
   }
 
-  // Rendered website error
+  // Non-API errors
   if (err.isOperational) {
-    return res.status(err.statusCode).render('error', {
-      title: 'Something went wrong!',
-      msg: err.message
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message
     });
   }
   
   // Programming or other unknown error: don't leak error details
   console.error('ERROR 💥', err);
-  return res.status(err.statusCode).render('error', {
-    title: 'Something went wrong!',
-    msg: 'Please try again later.'
+  return res.status(err.statusCode || 500).json({
+    success: false,
+    message: 'Please try again later.'
   });
 };
 
@@ -103,6 +106,11 @@ const sendErrorProd = (err, req, res) => {
 const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
+
+  console.log('=== ERROR HANDLER TRIGGERED ===');
+  console.log('Error name:', err.name);
+  console.log('Error message:', err.message);
+  console.log('Error stack:', err.stack);
 
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, req, res);
@@ -129,22 +137,29 @@ const catchAsync = (fn) => {
   };
 };
 
+// 404 Not Found middleware
+const notFound = (req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: `🔍 API route not found: ${req.originalUrl}`
+  });
+};
+
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('UNHANDLED REJECTION! 💥', reason.stack || reason);
   process.exit(1);
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
+  console.error('UNCAUGHT EXCEPTION! 💥', err.stack);
   process.exit(1);
 });
 
 module.exports = {
   AppError,
   globalErrorHandler,
-  catchAsync
+  catchAsync,
+  notFound
 };

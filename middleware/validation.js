@@ -23,7 +23,13 @@ const kenyanCounties = [
   'Samburu', 'Siaya', 'Taita-Taveta', 'Tana River', 'Tharaka-Nithi',
   'Trans Nzoia', 'Turkana', 'Uasin Gishu', 'Vihiga', 'Wajir', 'West Pokot'
 ];
-
+// Add this before your validation rules
+(req, res, next) => {
+  console.log('Validating author:', req.body.author);
+  console.log('Author name:', req.body.author?.name);
+  console.log('Author title:', req.body.author?.title);
+  next();
+}
 // Volunteer validation rules
 const validateVolunteer = [
   body('firstName')
@@ -104,17 +110,18 @@ const validateVolunteer = [
   handleValidationErrors
 ];
 
-// Press release validation rules
+// Press release validation rules - UPDATED
 const validatePressRelease = [
   body('title')
     .trim()
     .isLength({ min: 10, max: 200 })
     .withMessage('Title must be between 10 and 200 characters'),
   
-  body('summary')
+  // CHANGED: 'summary' to 'excerpt' to match frontend
+  body('excerpt')
     .trim()
     .isLength({ min: 50, max: 500 })
-    .withMessage('Summary must be between 50 and 500 characters'),
+    .withMessage('Excerpt must be between 50 and 500 characters'),
   
   body('content')
     .trim()
@@ -131,15 +138,17 @@ const validatePressRelease = [
     .toDate()
     .withMessage('Please provide a valid publish date'),
   
+  // Replace the author validation in validatePressRelease with:
+
   body('author.name')
-    .trim()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Author name must be between 2 and 100 characters'),
-  
+  .isLength({ min: 2, max: 100 })
+  .withMessage('Author name must be between 2 and 100 characters')
+  .customSanitizer(value => value?.trim()),
+
   body('author.title')
-    .trim()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Author title must be between 2 and 100 characters'),
+  .isLength({ min: 2, max: 100 })
+  .withMessage('Author title must be between 2 and 100 characters')
+  .customSanitizer(value => value?.trim()),
   
   body('author.email')
     .optional()
